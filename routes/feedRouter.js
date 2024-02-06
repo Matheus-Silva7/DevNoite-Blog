@@ -1,25 +1,20 @@
-/* requirindo o express e iniciando o router (recurso do express) */
-const express = require("express")
-const router = express.Router()
-const { body } = require("express-validator")
-/* importantando arquivos */
+const express = require("express");
+const router = express.Router();
 
-const feedController = require("../controllers/feedControllers")
+const feedController = require("../controllers/feedControllers");
+const { validateEmail, validateTitle } = require("../services/validators");
 
-/* criar as rotas relacionadas ao feed */
-router.get("/post", (feedController.getPosts))
-router.post("/post", (feedController.createPosts))
-router.patch("/post/:postId", (feedController.UpdatePost))
-router.delete("/post/:postId", (feedController.deletePost))
+//Criar as rotas relacionadas ao feed
 
-router.post(
-    "/post",
+router.get('/posts', feedController.getPosts);
+router.post('/post',
     [
-        body("title").trim().isLength({ min: 5 }),
-        body("content").trim().isLength({ min: 5 })
+        
+            validateEmail, validateTitle
+    ]
+    , feedController.createPost);
 
-    ],
-    feedController.createPosts
-)
+router.patch("/post/:postID", feedController.updatePost);
+router.delete("/post/:postID", feedController.deletePost);
 
-module.exports = router
+module.exports = router;

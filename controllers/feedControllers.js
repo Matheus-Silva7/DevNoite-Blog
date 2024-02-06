@@ -1,48 +1,64 @@
+const {validationResult} = require("express-validator")
+
 exports.getPosts = (req, res, next) => {
     res.status(200).json({
-        posts: [{
-            title: "Primeiro post",
-            content: "Este é o primeiro post!"
-        }]
+        posts: [
+            {
+                title: "Primeiro post",
+                content: "Este é o meu primeiro post!"
+            }
+        ]
     })
 }
 
-exports.createPosts = (req, res, next) => {
-    const title = req.body.title;
-    const content = req.body.content;
+exports.createPost = (req, res, next) => {
 
-    //validação simples => verificar se os dados foram enviados corretamente
-    if (!title || !content) {
-        res.status(400).json({
-            error: true,
-            msg: "Você precisa enviar os dados corretamente"
+    const errors = validationResult(req)
+
+    console.log(errors)
+
+    if (!errors.isEmpty()){
+        return res.status(422).send({
+            error:true, 
+            message: errors.array()[0].msg
         })
     }
 
-    //ADD este post ao DB
+    const title = req.body.title;
+    const content = req.body.content;
 
-    console.log(title)
-    console.log(content)
+  /*   if (!title || !content) {
+        return res.status(400).json({
+            error: true,
+            msg: "Você precisa enviar os dados corretamente!!"
+        })
+    } */
+    //Add este post ao DB
 
     res.status(201).json({
-        msg: "Post criado com sucesso!"
+        error: false,
+        message: "Post criado com sucesso!!"
     })
 }
 
-exports.UpdatePost = (req, res, next) => {
-    const postId = req.params.postId
-    console.log(postId)
+//Rotas para atualizar e deletar um post
+
+exports.updatePost = (req, res, next) => {
+    const postId = req.params.postID;
+    //Buscar no DB
+    console.log(postId);
     res.status(200).json({
         msg: "Post atualizado com sucesso!",
         post: postId
-    })
+    });
 }
 
 exports.deletePost = (req, res, next) => {
-    const postId = req.params.postId
-    console.log(postId)
+    const postID = req.params.postID;
+    //Buscar no DB
+    console.log(postID);
     res.status(200).json({
-        msg: "Post deletado com sucesso!",
-        post: postId
-    })
+        msg: "Post excluído com sucesso!",
+        post: postID
+    });
 }
