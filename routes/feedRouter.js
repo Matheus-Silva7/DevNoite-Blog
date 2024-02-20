@@ -9,8 +9,7 @@ const { validateEmail, validateTitle } = require("../services/validators");
 router.get('/posts', feedController.getPosts);
 router.post('/post',
     [
-        
-            validateEmail, validateTitle
+        validateTitle
     ]
     , feedController.createPost);
 

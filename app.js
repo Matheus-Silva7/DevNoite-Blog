@@ -1,5 +1,5 @@
 const express = require("express")
-
+const mongoose = require("mongoose")
 
 const app = express()
 const port = 8080
@@ -23,6 +23,13 @@ app.use((req, res, next) => {
 app.use("/feed", feedRoutes)
 app.use("/auth", authRoutes)
 
-app.listen(port, () => {
-    console.log("servidor online... porta:" + port)
+mongoose.connect("mongodb://localhost:27017")
+.then(result =>{
+    app.listen(port, () => {
+        console.log("servidor online... porta:" + port)
+    })
 })
+.catch(error =>{
+    console.log(error)
+})
+
