@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/user")
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.signUpUser = (req, res, next) => {
     const errors = validationResult(req);
@@ -28,10 +29,12 @@ exports.signUpUser = (req, res, next) => {
         })
 
         user.save()
-            .then(result => {
+            .then(user => {
+
+                user.password = undefined; // para nao devolver a senha
                 res.status(201).json({
                     message: "User criado com sucesso!!",
-                    result: result
+                    result: user
                 })
             }).catch(error => {
                 res.status(500).json({
@@ -39,12 +42,9 @@ exports.signUpUser = (req, res, next) => {
                     result: error
                 })
             })
-
     })
-
-
 }
-exports.signInUser =async (req, res, next) => {
+exports.signInUser = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     let loadedUser;
@@ -54,19 +54,39 @@ exports.signInUser =async (req, res, next) => {
             //validar que email não existe na base
             console.log(user)
             if (!user) {
-              return  Promise.reject("Falha de validação");
-                //error.statusCode = 422;
-                //throw error;
+                const error = new Error("Falha de validação");
+                error.statusCode = 422;
+                throw error;
             }
             loadedUser = user;
             return bcrypt.compare(password, user.password);
         }).then(passIsEqual => {
             if (!passIsEqual) {
-                return res.json({ message: "Senha inválida..." })
+                const error = new Error("Email ou senha inválida...");
+                error.statusCode = 401;
+                throw error;
             }
-            return res.status(200).json({ message: "Usuário logado com sucesso!" })
+
+            //Vamos gerar o token para ele!
+            const token = jwt.sign(
+                {
+                    email: loadedUser.email,
+                    userId: loadedUser._id.toString()
+                },
+                "MinhaChaveJWT@2024Senai",
+                { expiresIn: "1h" }
+            )
+
+            return res.status(200).json({
+                message: "Usuário logado com sucesso!",
+                token: token,
+            })
         })
         .catch(error => {
             console.log(error)
+            if (!error.statusCode) {
+                error.statusCode = 500;
+            }
+            next(error);
         })
 }
