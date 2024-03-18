@@ -85,24 +85,30 @@ exports.createPost = (req, res, next) => {
         })
 }
 
-//Rotas para atualizar e deletar um post
-
+//update post
 exports.updatePost = (req, res, next) => {
-    const postId = req.params.postID;
-    //Buscar no DB
-    console.log(postId);
-    res.status(200).json({
-        msg: "Post atualizado com sucesso!",
-        post: postId
-    });
+    const postID = req.params.postID;
+    const title = req.body.title;
+    const content = req.body.content;
+    const imageUrl = req.file.path;
+    console.log(postID);
+    Post.updateOne({_id: postID}, {title: title, content: content, imageUrl: imageUrl})
+        .then(
+            res.status(200).json({
+                msg: "Post atualizado com sucesso!",
+                post: postID
+            }))
 }
 
+
+//deletando post
 exports.deletePost = (req, res, next) => {
     const postID = req.params.postID;
-    //Buscar no DB
     console.log(postID);
-    res.status(200).json({
-        msg: "Post excluído com sucesso!",
-        post: postID
-    });
+    Post.deleteOne({ _id: postID })
+        .then(
+            res.status(200).json({
+                msg: "Post excluído com sucesso!",
+                post: postID
+            }))
 }
