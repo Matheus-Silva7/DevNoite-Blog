@@ -114,3 +114,17 @@ exports.dataUser = (req, res, next) => {
         })
 }
 
+exports.updateProfile = (req, res, next) => {
+    const userID = req.params.userID;
+    const name = req.body.name;
+  
+    console.log(userID);
+    User.updateOne({ _id: userID }, { name: name})
+        .then(
+            res.status(200).json({
+                msg: "Nome atualizado com sucesso!",
+                userId: userID
+            }))
+}
+
+

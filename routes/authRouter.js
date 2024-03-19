@@ -11,6 +11,8 @@ router.post('/signin',[validateEmail, validatePassword], auth.signInUser);
 
 router.get("/profile", isAuth, auth.dataUser)
 
+router.patch("/editProfile/:userID", auth.updateProfile)
+
 
 
 

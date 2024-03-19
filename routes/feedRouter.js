@@ -20,7 +20,7 @@ router.post('/post',
     feedController.createPost);
 
 
-router.patch("/post/:postID", feedController.updatePost);
-router.delete("/post/:postID", feedController.deletePost);
+router.patch("/post/:postID", isAuth, feedController.updatePost);
+router.delete("/post/:postID",isAuth, feedController.deletePost);
 
 module.exports = router;
