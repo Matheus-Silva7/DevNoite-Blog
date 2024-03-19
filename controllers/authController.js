@@ -52,7 +52,6 @@ exports.signInUser = async (req, res, next) => {
     await User.findOne({ email: email })
         .then(user => { //user é o que ele retorna
             //validar que email não existe na base
-            console.log(user)
             if (!user) {
                 const error = new Error("Falha de validação");
                 error.statusCode = 422;
@@ -70,17 +69,20 @@ exports.signInUser = async (req, res, next) => {
             //Vamos gerar o token para ele!
             const token = jwt.sign(
                 {
+                    userId: loadedUser._id.toString(),
+                    name: loadedUser.name,
                     email: loadedUser.email,
-                    userId: loadedUser._id.toString()
                 },
                 "MinhaChaveJWT@2024Senai",
                 { expiresIn: "1h" }
             )
 
+
             return res.status(200).json({
                 message: "Usuário logado com sucesso!",
                 token: token,
             })
+
         })
         .catch(error => {
             console.log(error)
@@ -90,3 +92,25 @@ exports.signInUser = async (req, res, next) => {
             next(error);
         })
 }
+
+exports.dataUser = (req, res, next) => {
+    const userId = req.userId
+    User.findById(userId)
+        .then(loadedUser => {
+            if (!loadedUser) {
+                res.status(404).json({
+                    message: "Usuario não encontrado"
+                })
+            } else {
+                res.status(200).json({
+                    userId: loadedUser._id.toString(),
+                    name: loadedUser.name,
+                    email: loadedUser.email,
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
