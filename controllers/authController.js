@@ -143,14 +143,13 @@ exports.changePassword = (req, res, next) => {
                 error.statusCode = 422;
                 throw error;
             }
-            loadedUser = user;
             return bcrypt.compare(currentPassword, user.password);
         })
         .then(passIsEqual => {
             if (!passIsEqual) {
-               res.status(401).json({
-                message: "Senhas diferentes!"
-               })
+                res.status(401).json({
+                    message: "Senhas diferentes!"
+                })
             }
 
             bcrypt.hash(newPassword, 12).then(newPasswordHashed => {
@@ -163,6 +162,34 @@ exports.changePassword = (req, res, next) => {
                         })
                     )
             })
+        })
+}
+
+exports.deleteUser = (req, res, next) => {
+    const userId = req.userId
+    const password = req.body.password
+    User.findById(userId)
+        .then(user => {
+            if (!user) {
+                const error = new Error("Falha de validação");
+                error.statusCode = 422;
+                throw error;
+            }
+            return bcrypt.compare(password, user.password);
+        })
+        .then(passIsEqual => {
+            if (!passIsEqual) {
+                res.status(401).json({
+                    message: "Senhas incorreta!"
+                })
+            }
+            
+            User.deleteOne({ _id: userId })
+                .then(
+                    res.status(200).json({
+                        message: "Usuário excluído com sucesso!",
+                    })
+                )
         })
 }
 

@@ -15,6 +15,8 @@ router.patch("/editProfile/:userID", auth.updateProfile)
 
 router.patch("/changepassword", [validateNewPassword], isAuth, auth.changePassword)
 
+router.delete("/deleteUser", isAuth, auth.deleteUser)
+
 
 
 
