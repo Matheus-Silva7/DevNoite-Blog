@@ -3,6 +3,7 @@ const User = require("../models/user")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+//função para fazer o cadastro do usuario
 exports.signUpUser = (req, res, next) => {
     const errors = validationResult(req);
     //Mudar esta validação para um captar no app
@@ -44,6 +45,8 @@ exports.signUpUser = (req, res, next) => {
             })
     })
 }
+
+//função para fazer login do usuario caso ele exista
 exports.signInUser = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -93,6 +96,7 @@ exports.signInUser = async (req, res, next) => {
         })
 }
 
+//função para retornar os dados do usuario, quando ele estiver logado
 exports.dataUser = (req, res, next) => {
     const userId = req.userId
     User.findById(userId)
@@ -114,6 +118,7 @@ exports.dataUser = (req, res, next) => {
         })
 }
 
+//função para alterar o nome do usuario
 exports.updateProfile = (req, res, next) => {
     const userID = req.params.userID;
     const name = req.body.name;
@@ -126,5 +131,9 @@ exports.updateProfile = (req, res, next) => {
                 userId: userID
             }))
 }
+
+/* exports.changePassword = (req, res, next) =>{
+
+} */
 
 
