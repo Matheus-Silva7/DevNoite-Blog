@@ -122,18 +122,48 @@ exports.dataUser = (req, res, next) => {
 exports.updateProfile = (req, res, next) => {
     const userID = req.params.userID;
     const name = req.body.name;
-  
     console.log(userID);
-    User.updateOne({ _id: userID }, { name: name})
+    User.updateOne({ _id: userID }, { name: name })
         .then(
             res.status(200).json({
-                msg: "Nome atualizado com sucesso!",
+                message: "Nome atualizado com sucesso!",
                 userId: userID
             }))
 }
 
-/* exports.changePassword = (req, res, next) =>{
+exports.changePassword = (req, res, next) => {
+    const userId = req.userId
+    const currentPassword = req.body.currentPassword
+    const newPassword = req.body.newPassword
+    console.log(userId)
+    User.findById(userId)
+        .then(user => {
+            if (!user) {
+                const error = new Error("Falha de validação");
+                error.statusCode = 422;
+                throw error;
+            }
+            loadedUser = user;
+            return bcrypt.compare(currentPassword, user.password);
+        })
+        .then(passIsEqual => {
+            if (!passIsEqual) {
+               res.status(401).json({
+                message: "Senhas diferentes!"
+               })
+            }
 
-} */
+            bcrypt.hash(newPassword, 12).then(newPasswordHashed => {
+
+                User.updateOne({ _id: userId }, { password: newPasswordHashed })
+                    .then(
+                        res.status(200).json({
+                            message: "Senha atualizada com sucesso!",
+                            userId: userId
+                        })
+                    )
+            })
+        })
+}
 
 
