@@ -86,29 +86,116 @@ exports.createPost = (req, res, next) => {
 }
 
 //update post
+
+
 exports.updatePost = (req, res, next) => {
+
     const postID = req.params.postID;
     const title = req.body.title;
     const content = req.body.content;
     const imageUrl = req.file.path;
     console.log(postID);
-    Post.updateOne({_id: postID}, {title: title, content: content, imageUrl: imageUrl})
-        .then(
-            res.status(200).json({
-                msg: "Post atualizado com sucesso!",
-                post: postID
-            }))
+    Post.findById(postID)
+        .then(post => {
+            if (req.userId !== post.creator.toString()) {
+                res.status(400).json({
+                    msg: "Você não é o criador do post!"
+                })
+            }
+            Post.updateOne({ _id: postID }, { title: title, content: content, imageUrl: imageUrl })
+                .then(
+                    res.status(200).json({
+                        msg: "Post atualizado com sucesso!",
+                        post: postID
+                    }))
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ error: "Ocorreu um erro ao atualizar o post" });
+        });
+
 }
+
 
 
 //deletando post
 exports.deletePost = (req, res, next) => {
     const postID = req.params.postID;
     console.log(postID);
-    Post.deleteOne({ _id: postID })
-        .then(
-            res.status(200).json({
-                msg: "Post excluído com sucesso!",
-                post: postID
-            }))
+    Post.findById(postID)
+        .then(post => {
+            if (req.userId !== post.creator.toString()) {
+                res.status(400).json({
+                    msg: "Você não é o criador do post!"
+                })
+            }
+            Post.deleteOne({ _id: postID })
+                .then(
+                    res.status(200).json({
+                        msg: "Post excluído com sucesso!",
+                        post: postID
+                    }))
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ error: "Ocorreu um erro ao atualizar o post" });
+        });
 }
+
+
+exports.addFavorite = (req, res, next) => {
+    const userId = req.userId;
+    const postId = req.params.postID;
+
+    User.findById(userId)
+        .then(user => {
+            if (!user) {
+                return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+
+            // Verifica se o post já está na lista de favoritos
+            if (user.favorites.includes(postId)) {
+                return res.status(400).json({ error: "Este post já está nos favoritos do usuário" });
+            }
+
+            // Adiciona o post à lista de favoritos do usuário
+            user.favorites.push(postId);
+
+            // Salva as alterações no usuário
+            return user.save();
+        })
+        .then(result => {
+            res.status(200).json({ message: "Post adicionado aos favoritos com sucesso!" });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ error: "Ocorreu um erro ao adicionar o post aos favoritos" });
+        });
+};
+
+exports.removeFavorite = (req, res, next) => {
+    const userId = req.userId;
+    const postId = req.params.postID;
+
+    User.findById(userId)
+        .then(user => {
+            if (!user) {
+                return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+
+           /*  // Verifica se o post já está na lista de favoritos
+            if (user.favorites.includes(postId)) {
+                user.deleteOne.(user.favorites.includes(postId))
+            } */
+
+
+           
+        })
+        .then(result => {
+            res.status(200).json({ message: "Post excluido aos favoritos com sucesso!" });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ error: "Ocorreu um erro ao adicionar o post aos favoritos" });
+        });
+};

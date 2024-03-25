@@ -151,7 +151,6 @@ exports.changePassword = (req, res, next) => {
                     message: "Senhas diferentes!"
                 })
             }
-
             bcrypt.hash(newPassword, 12).then(newPasswordHashed => {
 
                 User.updateOne({ _id: userId }, { password: newPasswordHashed })
