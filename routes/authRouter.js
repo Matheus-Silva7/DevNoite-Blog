@@ -11,7 +11,7 @@ router.post('/signin',[validateEmail, validatePassword], auth.signInUser);
 
 router.get("/profile", isAuth, auth.dataUser)
 
-router.patch("/editProfile/:userID", auth.updateProfile)
+router.patch("/editProfile", isAuth, auth.updateProfile)
 
 router.patch("/changepassword", [validateNewPassword], isAuth, auth.changePassword)
 

@@ -120,7 +120,7 @@ exports.dataUser = (req, res, next) => {
 
 //função para alterar o nome do usuario
 exports.updateProfile = (req, res, next) => {
-    const userID = req.params.userID;
+    const userID = req.userId;
     const name = req.body.name;
     console.log(userID);
     User.updateOne({ _id: userID }, { name: name })

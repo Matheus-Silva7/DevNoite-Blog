@@ -24,6 +24,6 @@ router.patch("/post/:postID", isAuth, feedController.updatePost);
 router.delete("/post/:postID",isAuth, feedController.deletePost);
 
 router.post("/addfavorite/:postID", isAuth, feedController.addFavorite)
-router.post("/removefavorite/:postID", isAuth, feedController.removeFavorite)
+router.delete("/removefavorite/:postID", isAuth, feedController.removeFavorite)
 
 module.exports = router;

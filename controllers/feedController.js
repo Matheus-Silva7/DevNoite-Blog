@@ -182,20 +182,23 @@ exports.removeFavorite = (req, res, next) => {
             if (!user) {
                 return res.status(404).json({ error: "Usuário não encontrado" });
             }
-
-           /*  // Verifica se o post já está na lista de favoritos
-            if (user.favorites.includes(postId)) {
-                user.deleteOne.(user.favorites.includes(postId))
-            } */
-
-
-           
+            
+            // Verifica se o post está na lista de favoritos
+            const index = user.favorites.indexOf(postId);
+            if (index !== -1) {
+                // Remove o post da lista de favoritos do usuário
+                user.favorites.splice(index, 1);
+                // Salva as alterações no usuário
+                return user.save();
+            } else {
+                return res.status(400).json({ error: "Este post não está na lista de favoritos do usuário" });
+            }
         })
         .then(result => {
-            res.status(200).json({ message: "Post excluido aos favoritos com sucesso!" });
+            res.status(200).json({ message: "Post removido dos favoritos com sucesso!" });
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ error: "Ocorreu um erro ao adicionar o post aos favoritos" });
+            res.status(500).json({ error: "Ocorreu um erro ao remover o post dos favoritos" });
         });
 };
