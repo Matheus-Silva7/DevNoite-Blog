@@ -107,9 +107,7 @@ exports.dataUser = (req, res, next) => {
                 })
             } else {
                 res.status(200).json({
-                    userId: loadedUser._id.toString(),
-                    name: loadedUser.name,
-                    email: loadedUser.email,
+                    loadedUser
                 })
             }
         })
